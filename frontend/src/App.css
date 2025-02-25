@@ -1,0 +1,68 @@
+/* App.css */
+.app {
+  text-align: center;
+  background-color: lightblue;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  width: 300px;
+}
+
+.heading-icon {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.heading-title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.heading-description {
+  font-size: 14px;
+  color: #555;
+}
+
+.search-box {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  /* padding: 10px; */
+}
+
+.search-edit {
+  width: 250px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.search-dropdown {
+  max-height: 150px;
+  width: 160px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  z-index: 1;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.grid-item {
+  background-color: #ccc;
+  padding: 20px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .card-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
