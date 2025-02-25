@@ -18,16 +18,7 @@ from django.urls import path, include
 from rest_framework import routers
 from api import views
 
-router = routers.DefaultRouter()
-router.register(r'client', views.ClientView, 'client')
-router.register(r'project', views.ProjectView, 'project')
-router.register(r'todos', views.TodolistView, 'todos')
-router.register(r'users', views.UserView, 'users')
-
-
-
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
-    path('auth/', views.CustomAuthToken.as_view()),
+    path('api/search/', views.SearchView.as_view(), name='search'),
+    path('api/clear-cache/', views.ClearCacheView.as_view(), name='clear_cache'),
 ]
