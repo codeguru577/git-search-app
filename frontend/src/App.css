@@ -26,12 +26,23 @@
   font-size: 14px;
   color: #555;
 }
-
 .search-box {
   display: flex;
   gap: 10px;
   margin-top: 10px;
   margin-bottom: 10px;
+  /* padding: 10px; */
+}
+.search-box-top {
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  /* padding: 10px; */
+}
+
+.search-box-center {
+  gap: 10px;
+  margin-top: 20%;
   /* padding: 10px; */
 }
 
