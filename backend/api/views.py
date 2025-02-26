@@ -15,21 +15,22 @@ class SearchView(APIView):
         search_type = request.data.get('search_type')
         search_text = request.data.get('search_text')
         page = request.data.get('page')
+        per_page = request.data.get('per_page')
         if not search_text:
             return Response({"error": "search_text is mandatory"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create cache key
-        cache_key = f"search_{search_type}_{search_text}_{page}"
+        cache_key = f"search_{search_type}_{search_text}_{page}_{per_page}"
         cached_result = cache.get(cache_key)
-        # print("cache key: ", cache_key)
+        print("cache key: ", cache_key)
         if cached_result:
             return Response(cached_result)
 
         # Search based on search type
         if search_type == "user":
-            api_url = f"https://api.github.com/search/users?q={search_text}&page={page}"
+            api_url = f"https://api.github.com/search/users?q={search_text}&page={page}&per_page={per_page}"
         elif search_type == "repository":
-            api_url = f"https://api.github.com/search/repositories?q={search_text}&page={page}"
+            api_url = f"https://api.github.com/search/repositories?q={search_text}&page={page}&per_page={per_page}"
         else:
             return Response({"error": "Invalid search type. Choose from 'user' or 'repository'."}, status=status.HTTP_400_BAD_REQUEST)
 

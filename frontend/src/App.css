@@ -71,6 +71,7 @@
   padding: 15px;
   text-align: left;
   display: flex;
+  min-width: 0;
 }
 
 .git-avatar {
@@ -84,6 +85,14 @@
   font-size: 16px;
 }
 
+.git-repo-description {
+  padding-right: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .git-repo-visibility {
   font-weight: normal;
   font-size: 12px;
@@ -97,6 +106,11 @@
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+
+  -webkit-line-clamp: 1; /* Number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stat {

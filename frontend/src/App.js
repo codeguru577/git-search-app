@@ -22,6 +22,7 @@ const App = () => {
   const [githubData, setGithubData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [perPage, setPerPage] = useState(12); // Number of items to display per page
   const fetchGithub = async (type, text, page) => {
     // console.log("Fetching...", type, text, page);
     if (text.length < 3) {
@@ -38,6 +39,7 @@ const App = () => {
         search_type: type,
         search_text: text,
         page: page,
+        per_page: perPage,
       });
       setStatus("Data sent successfully!"); // Update status on success
       setGithubData(result.hasOwnProperty("items") ? result["items"] : []);
@@ -68,6 +70,7 @@ const App = () => {
 
     setTypingTimeout(newTimeout); // Store the timeout ID
   };
+
   const handleSelectChange = (event) => {
     const value = event.target.value;
     setSearchType(value);
@@ -87,7 +90,6 @@ const App = () => {
   };
 
   // Pagination state
-  const itemsPerPage = 30; // Number of items to display per page
 
   // Handle page change
   const handlePageClick = ({ selected }) => {
@@ -180,7 +182,9 @@ const App = () => {
                         : "N/A"}
                     </span>
                   </div>
-                  <div>{item.description || "No description provided"}</div>
+                  <div className="git-repo-description">
+                    {item.description || "No description provided\n"}
+                  </div>
                   <div className="repo-stats">
                     <div className="stat">
                       <a
@@ -238,7 +242,7 @@ const App = () => {
           previousLabel={"‹"}
           nextLabel={"›"}
           breakLabel={"..."}
-          pageCount={Math.ceil(totalCount / itemsPerPage)}
+          pageCount={Math.ceil(totalCount / perPage)}
           marginPagesDisplayed={1}
           pageRangeDisplayed={5}
           onPageChange={handlePageClick}
