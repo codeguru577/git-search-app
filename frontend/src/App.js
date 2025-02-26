@@ -4,13 +4,14 @@ import {
   FaStar,
   FaCodeBranch,
   FaExclamationCircle,
-  FaGitPullRequest,
   FaFileAlt,
   FaMapMarkerAlt,
 } from "react-icons/fa"; // Import icons from react-icons
 import moment from "moment";
 import "./App.css";
 import _ from "lodash";
+import ReactPaginate from "react-paginate";
+
 // import Nav from "./components/Nav";
 
 const App = () => {
@@ -18,10 +19,11 @@ const App = () => {
   const [searchText, setSearchText] = useState("");
   const [status, setStatus] = useState("");
   const [typingTimeout, setTypingTimeout] = useState(null);
-
   const [githubData, setGithubData] = useState([]);
-
-  const fetchGithub = async (type, text) => {
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const fetchGithub = async (type, text, page) => {
+    // console.log("Fetching...", type, text, page);
     if (text.length < 3) {
       setGithubData([]);
       return;
@@ -31,14 +33,17 @@ const App = () => {
       setStatus("Sending..."); // Update the status to "Sending..."
 
       // Send the POST request with the input value
-      console.log(type, text);
+      // console.log(type, text);
       const result = await postData("/api/search/", {
         search_type: type,
         search_text: text,
-      }); // Your endpoint here
+        page: page,
+      });
       setStatus("Data sent successfully!"); // Update status on success
       setGithubData(result.hasOwnProperty("items") ? result["items"] : []);
-      console.log(result.hasOwnProperty("items") ? result["items"] : []);
+      setTotalCount(result.total_count);
+
+      // console.log("Server Response: ", result);
     } catch (error) {
       setStatus(`Error: ${error.message}`); // Update status on error
     }
@@ -57,8 +62,9 @@ const App = () => {
 
     // Set a new timeout for debouncing
     const newTimeout = setTimeout(() => {
-      debouncedFetchGithub(searchType, value); // Send POST request after typing has stopped
-    }, 1000); // 1000ms (1 second) debounce time
+      debouncedFetchGithub(searchType, value, 1); // Send POST request after typing has stopped
+      setCurrentPage(0);
+    }, 500); // 1000ms (1 second) debounce time
 
     setTypingTimeout(newTimeout); // Store the timeout ID
   };
@@ -73,8 +79,27 @@ const App = () => {
 
     // Set a new timeout for debouncing
     const newTimeout = setTimeout(() => {
-      debouncedFetchGithub(value, searchText); // Send POST request after typing has stopped
-    }, 1000); // 1000ms (1 second) debounce time
+      debouncedFetchGithub(value, searchText, 1); // Send POST request after typing has stopped
+      setCurrentPage(0);
+    }, 500); // 1000ms (1 second) debounce time
+
+    setTypingTimeout(newTimeout); // Store the timeout ID
+  };
+
+  // Pagination state
+  const itemsPerPage = 30; // Number of items to display per page
+
+  // Handle page change
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+
+    // Set a new timeout for debouncing
+    const newTimeout = setTimeout(() => {
+      debouncedFetchGithub(searchType, searchText, selected + 1);
+    }, 500);
 
     setTypingTimeout(newTimeout); // Store the timeout ID
   };
@@ -208,6 +233,20 @@ const App = () => {
           </div>
         ))}
       </div>
+      {githubData.length > 0 && (
+        <ReactPaginate
+          previousLabel={"‹"}
+          nextLabel={"›"}
+          breakLabel={"..."}
+          pageCount={Math.ceil(totalCount / itemsPerPage)}
+          marginPagesDisplayed={1}
+          pageRangeDisplayed={5}
+          onPageChange={handlePageClick}
+          containerClassName={"pagination"}
+          activeClassName={"active"}
+          forcePage={currentPage}
+        />
+      )}
     </div>
   );
 };
