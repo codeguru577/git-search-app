@@ -52,15 +52,51 @@
 .card-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 5px;
 }
 
 .grid-item {
   background-color: #ccc;
-  padding: 20px;
-  text-align: center;
+  padding: 15px;
+  text-align: left;
+  display: flex;
 }
 
+.git-avatar {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.git-repo-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.git-repo-visibility {
+  font-weight: normal;
+  font-size: 12px;
+  border: 1px solid #222;
+  border-radius: 10px;
+  margin-left: 5px;
+  padding: 2px 4px 2px 4px;
+}
+
+.repo-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+a {
+  color: #222;
+}
 @media (max-width: 768px) {
   .card-container {
     grid-template-columns: repeat(2, 1fr);

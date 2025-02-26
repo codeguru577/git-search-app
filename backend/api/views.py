@@ -1,13 +1,8 @@
 import requests
-from rest_framework import viewsets
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django_filters.rest_framework import DjangoFilterBackend
 
-from django.contrib.auth.models import User
 from .serializers import *
 from .models import *
 from django.core.cache import cache

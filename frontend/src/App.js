@@ -1,9 +1,76 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
+import { postData } from "./APIService";
+import {
+  FaStar,
+  FaCodeBranch,
+  FaExclamationCircle,
+  FaGitPullRequest,
+  FaFileAlt,
+  FaMapMarkerAlt,
+} from "react-icons/fa"; // Import icons from react-icons
+import moment from "moment";
 import "./App.css";
 
 // import Nav from "./components/Nav";
 
 const App = () => {
+  const [searchType, setSearchType] = useState("user");
+  const [searchText, setSearchText] = useState("");
+  const [status, setStatus] = useState("");
+  const [typingTimeout, setTypingTimeout] = useState(null);
+
+  const [githubData, setGithubData] = useState([]);
+
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setSearchText(value);
+
+    // Clear previous timeout (if any)
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+
+    // Set a new timeout for debouncing
+    const newTimeout = setTimeout(() => {
+      fetchGithub(searchType, value); // Send POST request after typing has stopped
+    }, 1000); // 1000ms (1 second) debounce time
+
+    setTypingTimeout(newTimeout); // Store the timeout ID
+  };
+  const handleSelectChange = (event) => {
+    const value = event.target.value;
+    setSearchType(value);
+
+    // Clear previous timeout (if any)
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+
+    // Set a new timeout for debouncing
+    const newTimeout = setTimeout(() => {
+      fetchGithub(value, searchText); // Send POST request after typing has stopped
+    }, 1000); // 1000ms (1 second) debounce time
+
+    setTypingTimeout(newTimeout); // Store the timeout ID
+  };
+  const fetchGithub = async (type, text) => {
+    try {
+      setStatus("Sending..."); // Update the status to "Sending..."
+
+      // Send the POST request with the input value
+      console.log(type, text);
+      const result = await postData("/api/search/", {
+        search_type: type,
+        search_text: text,
+      }); // Your endpoint here
+      setStatus("Data sent successfully!"); // Update status on success
+      console.log("Server response:", result);
+      setGithubData(result.hasOwnProperty("items") ? result["items"] : []);
+      console.log(result.hasOwnProperty("items") ? result["items"] : []);
+    } catch (error) {
+      setStatus(`Error: ${error.message}`); // Update status on error
+    }
+  };
   return (
     <div>
       <div className="heading">
@@ -27,22 +94,105 @@ const App = () => {
       </div>
 
       <div className="search-box">
-        <input type="text" className="search-edit" placeholder="Search..." />
-        <select className="search-dropdown">
-          <option value="User">Users</option>
-          <option value="Repo">Repos</option>
+        <input
+          type="text"
+          className="search-edit"
+          placeholder="Search..."
+          value={searchText}
+          onChange={handleInputChange}
+        />
+        <select
+          className="search-dropdown"
+          value={searchType}
+          onChange={handleSelectChange}
+        >
+          <option value="user">Users</option>
+          <option value="repository">Repos</option>
         </select>
       </div>
       <div className="card-container">
-        <div className="grid-item">Item 1</div>
-        <div className="grid-item">Item 2</div>
-        <div className="grid-item">Item 3</div>
-        <div className="grid-item">Item 4</div>
-        <div className="grid-item">Item 5</div>
-        <div className="grid-item">Item 6</div>
-        <div className="grid-item">Item 7</div>
-        <div className="grid-item">Item 8</div>
-        <div className="grid-item">Item 9</div>
+        {githubData.map((item, index) => (
+          <div key={index} className="grid-item">
+            {searchType === "user" ? (
+              <>
+                <img
+                  src={item.avatar_url}
+                  alt={item.login}
+                  className="git-avatar"
+                />
+                <div>
+                  <a href={item.html_url} target="_blank">
+                    <div className="heading-title">{item.login}</div>
+                  </a>
+                  <div>{item.location || "No location provided"}</div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <div className="git-repo-name">
+                    <a href={item.html_url} target="_blank">
+                      {item.name}
+                    </a>
+                    <span className="git-repo-visibility">
+                      {item.visibility
+                        ? item.visibility.charAt(0).toUpperCase() +
+                          item.visibility.slice(1)
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div>{item.description || "No description provided"}</div>
+                  <div className="repo-stats">
+                    <div className="stat">
+                      <a
+                        href={`https://github.com/${
+                          item.owner ? item.owner.login : "N/A"
+                        }/${item.name}/stargazers`}
+                        target="_blank"
+                      >
+                        <FaStar />
+                        <span>{item.stargazers_count} Stars</span>
+                      </a>{" "}
+                    </div>
+                    •
+                    <div className="stat">
+                      <a
+                        href={`https://github.com/${
+                          item.owner ? item.owner.login : "N/A"
+                        }/${item.name}/network/members`}
+                        target="_blank"
+                      >
+                        <FaCodeBranch /> <span>{item.forks_count} Forks</span>
+                      </a>
+                    </div>
+                    •
+                    <div className="stat">
+                      <a
+                        href={`https://github.com/${
+                          item.owner ? item.owner.login : "N/A"
+                        }/${item.name}/issues`}
+                        target="_blank"
+                      >
+                        <FaExclamationCircle />{" "}
+                        <span>{item.open_issues_count} Issues</span>
+                      </a>
+                    </div>
+                    •
+                    <div className="stat">
+                      {item.language && <FaFileAlt />}{" "}
+                      <span>{item.language}</span>
+                    </div>
+                    •
+                    <div className="stat">
+                      <FaMapMarkerAlt />{" "}
+                      <span>Updated {moment(item.updated_at).fromNow()}</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

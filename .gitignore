@@ -24,3 +24,5 @@
 
 # Django Stuffs
 .env
+*.pyc
+/*/__pycache__
