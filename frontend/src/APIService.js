@@ -12,12 +12,12 @@ export const postData = async (endpoint, data) => {
       },
       body: JSON.stringify(data), // Convert data to JSON format
     });
+    const responseData = await response.json(); // Parse JSON response
 
     if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
+      throw new Error(`Error: ${responseData.error}`);
     }
 
-    const responseData = await response.json(); // Parse JSON response
     return responseData;
   } catch (error) {
     console.error("Error posting data:", error);

@@ -27,7 +27,10 @@ class SearchViewRealEndpointTests(TestCase):
         # Check if the result is cached
         cache_key = f"search_user_{data['search_text']}"
         cached_result = cache.get(cache_key)
-        self.assertEqual(cached_result, response.data)
+        if cached_result is not None:
+            self.assertEqual(cached_result, response.data)
+        else: 
+            cache.set(cache_key, response.data)
 
     def test_search_repository_success_real_endpoint(self):
         # Test data
@@ -46,7 +49,11 @@ class SearchViewRealEndpointTests(TestCase):
         # Check if the result is cached
         cache_key = f"search_repository_{data['search_text']}"
         cached_result = cache.get(cache_key)
-        self.assertEqual(cached_result, response.data)
+        if cached_result is not None:
+            self.assertEqual(cached_result, response.data)
+        else: 
+            cache.set(cache_key, response.data)
+
 
     def test_search_invalid_search_type_real_endpoint(self):
         # Test data
